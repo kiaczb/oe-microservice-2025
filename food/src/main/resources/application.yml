@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  name: customer
+
+
+
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+    show-extensions: true
+    show-common-extensions: true
+  api-docs:
+    path: /v3/api-docs/valami
+

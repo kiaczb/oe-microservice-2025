@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>hu.oe</groupId>
+        <artifactId>yokudlela</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <!-- lookup parent from repository -->
+    </parent>
+    <packaging>jar</packaging>
+    <artifactId>food</artifactId>
+    <name>food</name>
+    <description>Étel</description>
+
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+<!--        <exclusions>
+            <exclusion>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-common</artifactId>
+            </exclusion>
+        </exclusions>
+-->
+    </dependency>
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.8.5</version>
+    </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>2.2.28</version>
+    </dependency>
+
+    <dependency>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>3.1.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openapitools</groupId>
+        <artifactId>jackson-databind-nullable</artifactId>
+        <version>0.2.6</version>
+
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>8.0.2.Final</version>
+    </dependency>
+
+
+</dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven-clean-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>delete-old-files</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>
+                                        ${project.build.sourceDirectory}/hu/mk/kiaf/${project.artifactId}/generated
+                                    </directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </fileset>
+                                <fileset>
+                                    <directory>
+                                        ${project.build.sourceDirectory}/../resources/openapi/api
+                                    </directory>
+                                    <includes>
+                                        <include>_merged_spec.yaml</include>
+                                    </includes>
+                                </fileset>
+                                <fileset>
+                                    <directory>target</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>clean</phase>
+                        <id>generate-java</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                                        <templateDirectory>${project.basedir}/../_templates</templateDirectory>
+                            -->
+                            <skipValidateSpec>true</skipValidateSpec>
+                            <inputSpecRootDirectory>${project.basedir}/src/main/resources/openapi
+                            </inputSpecRootDirectory>
+                            <output>${project.build.sourceDirectory}</output>
+                            <generatorName>spring</generatorName>
+
+                            <apiPackage>hu.oe.yokudlela.${project.artifactId}.generated.rest.api</apiPackage>
+                            <modelPackage>hu.oe.yokudlela.${project.artifactId}.generated.rest.model</modelPackage>
+                            <invokerPackage>hu.oe.yokudlela.${project.artifactId}.generated.rest.invoker</invokerPackage>
+
+                            <addCompileSourceRoot>true</addCompileSourceRoot>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <configurationFile>${project.basedir}/../conf.yaml</configurationFile>
+                            <languageSpecificPrimitives>String,int,boolean,Double</languageSpecificPrimitives>
+                            <typeMappings>array=List,map=Map,string=String,integer=int,number=Double</typeMappings>
+                            <additionalProperties>
+                                <useLombok>true</useLombok>
+                            </additionalProperties>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <sourceFolder>/</sourceFolder>
+                                <additionalModelTypeAnnotations>
+                                    @lombok.Data
+                                    @lombok.NoArgsConstructor
+                                    @lombok.AllArgsConstructor
+                                    @lombok.Builder
+                                </additionalModelTypeAnnotations>
+
+                                <skipValidateSpec>false</skipValidateSpec>
+                                <useTags>true</useTags>
+                                <useJakartaEe>true</useJakartaEe>
+                                <dateLibrary>java8-localdatetime</dateLibrary>
+                                <reactive>false</reactive>
+                                <useBeanValidation>true</useBeanValidation>
+                                <useSpringSecurity>true</useSpringSecurity>
+                                <useOptional>false</useOptional>
+                                <generatedConstructorWithRequiredArgs>false</generatedConstructorWithRequiredArgs>
+                                <generatedConstructorWithNoArgs>false</generatedConstructorWithNoArgs>
+                                <performBeanValidation>true</performBeanValidation>
+                                <generateApis>false</generateApis>
+                            </configOptions>
+                            <typeMappings>LocalDate=Date</typeMappings>
+                            <importMappings>
+                                <importMapping>Date=java.util.Date</importMapping>
+                            </importMappings>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+
+                        <configuration>
+                            <mainClass>hu.oe.yokudlela.FoodApp</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
