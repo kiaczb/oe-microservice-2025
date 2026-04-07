@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: Pizza API
+  description: API pizzák lekérdezésére és kategóriák szerinti csoportosítására.
+  version: 1.0.0
+
+servers:
+  - url: https://example.com/api
+  - url: http://localhost:8080/api
+    description: Helyi fejlesztői szerver
+
+tags:
+  - name: pizza
+    description: Menü és pizzák kezelése
+
+paths:
+  /pizzas:
+    get:
+      tags:
+        - pizza
+      summary: Pizzák listázása
+      description: Az összes pizza lekérdezése.
+      responses:
+        "200":
+          description: A pizzák sikeresen lekérdezve
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pizza"
+              example:
+                - id: 1
+                  name: Margherita
+                  category: klasszikus
+                  price: 2500
+                - id: 2
+                  name: Hawaii
+                  category: különleges
+                  price: 2900
+
+  /pizzas/{id}:
+    get:
+      tags:
+        - pizza
+      summary: Pizza lekérdezése
+      description: Egy adott pizza lekérdezése az ID alapján.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: A pizza egyedi azonosítója
+      responses:
+        "200":
+          description: A pizza sikeresen lekérdezve
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pizza"
+              example:
+                id: 1
+                name: Margherita
+                category: klasszikus
+                price: 2500
+        "404":
+          description: A pizza nem található
+
+  /pizzas/category/{category}:
+    get:
+      tags:
+        - pizza
+      summary: Pizzák lekérdezése kategória szerint
+      description: Az adott kategóriába tartozó pizzák listázása.
+      parameters:
+        - in: path
+          name: category
+          required: true
+          schema:
+            type: string
+          description: A pizza kategóriája
+      responses:
+        "200":
+          description: A pizzák sikeresen lekérdezve
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pizza"
+              example:
+                - id: 1
+                  name: Margherita
+                  category: klasszikus
+                  price: 2500
+
+components:
+  schemas:
+    Pizza:
+      type: object
+      required:
+        - id
+        - name
+        - category
+        - price
+      properties:
+        id:
+          type: integer
+          description: A pizza egyedi azonosítója
+        name:
+          type: string
+          description: A pizza neve
+        category:
+          type: string
+          description: A pizza kategóriája (pl. klasszikus, csípős, vegetáriánus)
+        price:
+          type: integer
+          description: A pizza ára forintban
