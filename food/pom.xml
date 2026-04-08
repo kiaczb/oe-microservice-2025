@@ -210,6 +210,58 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.48.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <id>generate-docker</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <pushRegistry>docker.io</pushRegistry>
+                    <authConfig>
+                        <username>${env.DOCKER_USER}</username>
+                        <password>${env.DOCKER_PASSWORD}</password>
+                    </authConfig>
+                    <images>
+                        <image>
+                            <name>oe-java/oa-java</name>
+                            <build>
+                                <dockerFileDir>${project.basedir}/src/main/resources/docker/</dockerFileDir>
+                                <assembly>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <tags>
+                                    <tag>core-v1</tag>
+                                </tags>
+                                <assembly>
+                                    <inline>
+                                        <files>
+                                            <file>
+                                                <source>${project.build.directory}/${project.build.finalName}.jar</source>
+                                                <outputDirectory>./opt</outputDirectory>
+                                                <destName>application.jar</destName>
+                                            </file>
+                                        </files>
+                                    </inline>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                    <!--                    <authConfig>
+                                            <username>${env.DOCKERHUB_USER}</username>
+                                            <password>${env.DOCKERHUB_PASSWORD}</password>
+                                        </authConfig>
+                    -->
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
