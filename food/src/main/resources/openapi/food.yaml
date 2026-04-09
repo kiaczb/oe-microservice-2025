@@ -224,6 +224,7 @@ components:
         name:
           type: string
           description: Az ételkategória neve.
+          x-field-extra-annotation: '@hu.oe.yokudlela.food.validation.NameExists(message="error.food.name.exists")'
 
     Food:
       type: object
