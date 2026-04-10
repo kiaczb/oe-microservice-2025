@@ -5,8 +5,12 @@
  */
 package hu.oe.yokudlela.food.generated.rest.api;
 
-import hu.oe.yokudlela.food.generated.rest.model.Food;
-import hu.oe.yokudlela.food.generated.rest.model.FoodCategory;
+import hu.oe.yokudlela.food.generated.rest.model.ErrorResponse;
+import hu.oe.yokudlela.food.generated.rest.model.FoodCategoryRequest;
+import hu.oe.yokudlela.food.generated.rest.model.FoodCategoryResponse;
+import hu.oe.yokudlela.food.generated.rest.model.FoodRequest;
+import hu.oe.yokudlela.food.generated.rest.model.FoodResponse;
+import hu.oe.yokudlela.food.generated.rest.model.IdModel;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,7 +54,7 @@ public interface DefaultApi {
         description = "Lekérdezi az összes ételkategóriát.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Kategóriák sikeresen lekérdezve", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FoodCategory.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FoodCategoryResponse.class)))
             })
         }
     )
@@ -60,7 +64,7 @@ public interface DefaultApi {
         produces = { "application/json" }
     )
     
-    ResponseEntity<List<FoodCategory>> categoriesGet(
+    ResponseEntity<List<FoodCategoryResponse>> categoriesGet(
         
     );
 
@@ -79,16 +83,19 @@ public interface DefaultApi {
         description = "Törli a kategóriát ID alapján.",
         responses = {
             @ApiResponse(responseCode = "204", description = "Kategória törölve"),
-            @ApiResponse(responseCode = "404", description = "Kategória nem található")
+            @ApiResponse(responseCode = "404", description = "Kategória nem található", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
         }
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/categories/{id}"
+        value = "/categories/{id}",
+        produces = { "application/json" }
     )
     
     ResponseEntity<Void> categoriesIdDelete(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
+        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
     );
 
 
@@ -96,7 +103,7 @@ public interface DefaultApi {
      * GET /categories/{id} : Kategória lekérdezése
      * Lekérdezi egy adott kategóriát ID alapján.
      *
-     * @param id  (required)
+     * @param id A kategória egyedi azonosítója. (required)
      * @return Kategória sikeresen lekérdezve (status code 200)
      *         or Kategória nem található (status code 404)
      */
@@ -106,9 +113,11 @@ public interface DefaultApi {
         description = "Lekérdezi egy adott kategóriát ID alapján.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Kategória sikeresen lekérdezve", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = FoodCategory.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = FoodCategoryResponse.class))
             }),
-            @ApiResponse(responseCode = "404", description = "Kategória nem található")
+            @ApiResponse(responseCode = "404", description = "Kategória nem található", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
         }
     )
     @RequestMapping(
@@ -117,8 +126,8 @@ public interface DefaultApi {
         produces = { "application/json" }
     )
     
-    ResponseEntity<FoodCategory> categoriesIdGet(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
+    ResponseEntity<FoodCategoryResponse> categoriesIdGet(
+        @Parameter(name = "id", description = "A kategória egyedi azonosítója.", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
     );
 
 
@@ -126,7 +135,7 @@ public interface DefaultApi {
      * POST /categories : Új kategória hozzáadása
      * Új ételkategóriát hoz létre.
      *
-     * @param foodCategory  (required)
+     * @param foodCategoryRequest  (required)
      * @return Kategória sikeresen létrehozva (status code 201)
      */
     @Operation(
@@ -135,7 +144,7 @@ public interface DefaultApi {
         description = "Új ételkategóriát hoz létre.",
         responses = {
             @ApiResponse(responseCode = "201", description = "Kategória sikeresen létrehozva", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = FoodCategory.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = IdModel.class))
             })
         }
     )
@@ -146,8 +155,8 @@ public interface DefaultApi {
         consumes = { "application/json" }
     )
     
-    ResponseEntity<FoodCategory> categoriesPost(
-        @Parameter(name = "FoodCategory", description = "", required = true) @Valid @RequestBody FoodCategory foodCategory
+    ResponseEntity<IdModel> categoriesPost(
+        @Parameter(name = "FoodCategoryRequest", description = "", required = true) @Valid @RequestBody FoodCategoryRequest foodCategoryRequest
     );
 
 
@@ -163,7 +172,7 @@ public interface DefaultApi {
         description = "Lekérdezi az összes ételt.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Ételek sikeresen lekérdezve", content = {
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Food.class)))
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FoodResponse.class)))
             })
         }
     )
@@ -173,7 +182,7 @@ public interface DefaultApi {
         produces = { "application/json" }
     )
     
-    ResponseEntity<List<Food>> foodsGet(
+    ResponseEntity<List<FoodResponse>> foodsGet(
         
     );
 
@@ -192,16 +201,19 @@ public interface DefaultApi {
         description = "Törli az ételt az ID alapján.",
         responses = {
             @ApiResponse(responseCode = "204", description = "Étel törölve"),
-            @ApiResponse(responseCode = "404", description = "Étel nem található")
+            @ApiResponse(responseCode = "404", description = "Étel nem található", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
         }
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/foods/{id}"
+        value = "/foods/{id}",
+        produces = { "application/json" }
     )
     
     ResponseEntity<Void> foodsIdDelete(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
+        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
     );
 
 
@@ -219,9 +231,11 @@ public interface DefaultApi {
         description = "Lekérdez egy ételt az ID alapján.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Étel sikeresen lekérdezve", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Food.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = FoodResponse.class))
             }),
-            @ApiResponse(responseCode = "404", description = "Étel nem található")
+            @ApiResponse(responseCode = "404", description = "Étel nem található", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
         }
     )
     @RequestMapping(
@@ -230,8 +244,8 @@ public interface DefaultApi {
         produces = { "application/json" }
     )
     
-    ResponseEntity<Food> foodsIdGet(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id
+    ResponseEntity<FoodResponse> foodsIdGet(
+        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
     );
 
 
@@ -240,7 +254,7 @@ public interface DefaultApi {
      * Módosítja az étel adatait.
      *
      * @param id  (required)
-     * @param food  (required)
+     * @param foodRequest  (required)
      * @return Étel sikeresen módosítva (status code 200)
      *         or Étel nem található (status code 404)
      */
@@ -250,9 +264,11 @@ public interface DefaultApi {
         description = "Módosítja az étel adatait.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Étel sikeresen módosítva", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Food.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = FoodResponse.class))
             }),
-            @ApiResponse(responseCode = "404", description = "Étel nem található")
+            @ApiResponse(responseCode = "404", description = "Étel nem található", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
         }
     )
     @RequestMapping(
@@ -262,9 +278,9 @@ public interface DefaultApi {
         consumes = { "application/json" }
     )
     
-    ResponseEntity<Food> foodsIdPut(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") Integer id,
-        @Parameter(name = "Food", description = "", required = true) @Valid @RequestBody Food food
+    ResponseEntity<FoodResponse> foodsIdPut(
+        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id,
+        @Parameter(name = "FoodRequest", description = "", required = true) @Valid @RequestBody FoodRequest foodRequest
     );
 
 
@@ -272,7 +288,7 @@ public interface DefaultApi {
      * POST /foods : Új étel hozzáadása
      * Új ételt ad hozzá a rendszerhez.
      *
-     * @param food  (required)
+     * @param foodRequest  (required)
      * @return Étel sikeresen hozzáadva (status code 201)
      */
     @Operation(
@@ -281,7 +297,7 @@ public interface DefaultApi {
         description = "Új ételt ad hozzá a rendszerhez.",
         responses = {
             @ApiResponse(responseCode = "201", description = "Étel sikeresen hozzáadva", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Food.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = IdModel.class))
             })
         }
     )
@@ -292,8 +308,8 @@ public interface DefaultApi {
         consumes = { "application/json" }
     )
     
-    ResponseEntity<Food> foodsPost(
-        @Parameter(name = "Food", description = "", required = true) @Valid @RequestBody Food food
+    ResponseEntity<IdModel> foodsPost(
+        @Parameter(name = "FoodRequest", description = "", required = true) @Valid @RequestBody FoodRequest foodRequest
     );
 
 }

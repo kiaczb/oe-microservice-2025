@@ -1,0 +1,154 @@
+openapi: 3.0.0
+info:
+  title: Vevő Nyilvántartás API
+  description: "API a vevők nyilvántartására, ahol minden vevőhöz egyedi azonosító\
+    t és nevet rendelünk."
+  version: 1.0.0
+servers:
+- url: https://oe-html-5-2025-tavasz.wiremockapi.cloud/api
+- url: http://localhost:8080/api
+  description: Helyi fejlesztői szerver
+paths:
+  /customers:
+    get:
+      summary: Vevők listázása
+      description: Lekérdezi az összes vevőt.
+      responses:
+        "200":
+          description: A vevők sikeresen lekérdezve
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+              example:
+              - id: 1
+                name: Kovács János
+              - id: 2
+                name: Nagy Mária
+              - id: 3
+                name: Szabó Péter
+    post:
+      summary: Új vevő hozzáadása
+      description: Új vevőt ad hozzá a nyilvántartáshoz.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Customer"
+      responses:
+        "201":
+          description: A vevő sikeresen hozzáadva
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+              example:
+                id: 4
+                name: Horváth Gábor
+  /customers/{id}:
+    get:
+      summary: Vevő lekérdezése
+      description: Lekérdezi egy adott vevőt az ID alapján.
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: A vevő egyedi azonosítója.
+      responses:
+        "200":
+          description: A vevő sikeresen lekérdezve
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+              example:
+                id: 1
+                name: Kovács János
+        "404":
+          description: A vevő nem található
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Vevő nem található
+    put:
+      summary: Vevő módosítása
+      description: Módosítja a vevő nevét az ID alapján.
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: A vevő egyedi azonosítója.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Customer"
+      responses:
+        "200":
+          description: A vevő sikeresen módosítva
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+              example:
+                id: 1
+                name: Kovács Zoltán
+        "404":
+          description: A vevő nem található
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Vevő nem található
+    delete:
+      summary: Vevő törlése
+      description: Törli a vevőt az ID alapján.
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: A vevő egyedi azonosítója.
+      responses:
+        "204":
+          description: A vevő sikeresen törölve
+        "404":
+          description: A vevő nem található
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Vevő nem található
+components:
+  schemas:
+    Customer:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          description: A vevő egyedi azonosítója.
+        name:
+          type: string
+          description: A vevő neve.
