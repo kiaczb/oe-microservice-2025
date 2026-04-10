@@ -314,6 +314,42 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.hibernate.tool</groupId>
+                <artifactId>hibernate-tools-maven</artifactId>
+                <version>6.6.13.Final</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate.tool</groupId>
+                        <artifactId>hibernate-tools-orm</artifactId>
+                        <version>${hibernate-tools-orm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>hbm2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <templatePath>../_templates/hibernate</templatePath>
+                    <packageName>hu.oe.yokudlela.food.generated.entity</packageName>
+
+                    <revengFile>src/main/resources/hibernate.reveng.xml</revengFile>
+                    <propertyFile>src/main/resources/_hibernate.properties</propertyFile>
+                    <outputDirectory>src/main/java</outputDirectory>
+                    <ejb3>true</ejb3>
+                    <jdk5>true</jdk5>
+
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

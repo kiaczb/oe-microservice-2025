@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC
+        "-//http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+    <type-mapping>
+        <sql-type jdbc-type="VARCHAR" hibernate-type="java.lang.String"/>
+        <sql-type jdbc-type="DOUBLE" precision='4' hibernate-type="java.lang.Double"/>
+        <sql-type jdbc-type="TIMESTAMP" hibernate-type="java.time.LocalDateTime"/>
+        <sql-type jdbc-type="OTHER" hibernate-type="java.util.UUID"/>
+    </type-mapping>
+
+
+    <table-filter match-name="databasechangelog"  exclude="true"/>
+    <table-filter match-name="databasechangelogid" exclude="true"/>
+    <table-filter match-name="databasechangeloglock" exclude="true"/>
+
+    <table name="food" >
+        <column name="id" property="id" type="java.util.UUID">
+            <meta attribute="field-annotation">
+                @jakarta.persistence.GeneratedValue(generator = "uuid-hibernate-generator")
+            </meta>
+        </column>
+    </table>
+
+</hibernate-reverse-engineering>

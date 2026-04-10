@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-food-management-tables
+      author: Dog
+      labels: Ételrendelési táblák létrehozása
+      context: public
+      comment: Ételkategóriák és ételek tábláinak szerkezete
+      changes:
+        # 1. Ételkategóriák tábla (FoodCategory)
+        - createTable:
+            schemaName: public
+            tableName: food_category
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  remarks: Az ételkategória egyedi azonosítója
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_FOOD_CATEGORY
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  remarks: Az ételkategória neve
+                  constraints:
+                    nullable: false
+                    unique: true
+
+        # 2. Ételek tábla (Food)
+        - createTable:
+            schemaName: public
+            tableName: food
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  remarks: Az étel egyedi azonosítója
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: PK_FOOD
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  remarks: Az étel neve
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: integer
+                  remarks: Az étel ára forintban
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+                  remarks: Az étel kategóriájának azonosítója (FK)
+                  constraints:
+                    nullable: false
+
+        # 3. Idegen kulcs kényszer hozzáadása
+        - addForeignKeyConstraint:
+            baseTableName: food
+            baseColumnNames: category_id
+            referencedTableName: food_category
+            referencedColumnNames: id
+            constraintName: FK_FOOD_CATEGORY_ID
+            onDelete: CASCADE
