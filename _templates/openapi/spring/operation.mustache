@@ -1,0 +1,11 @@
+@Operation(
+    {{#operation.description}}"{{operation.description}}"{{/operation.description}},
+    {{#operation.security}}
+    security = {
+        {{#operation.security}}
+        @SecurityRequirement(name = "{{name}}"{{#scopes}}, scopes = { {{#scopes}}"{{.}}"{{/scopes}} }{{/scopes}})
+        {{/operation.security}}
+    },
+    // Debug: Custom template executed
+    {{/operation.security}}
+)

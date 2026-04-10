@@ -10,7 +10,6 @@ servers:
     description: Helyi fejlesztői szerver
 
 paths:
-
   /categories:
     get:
       summary: Kategóriák listázása
@@ -23,14 +22,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/FoodCategory"
+                  $ref: "#/components/schemas/FoodCategoryResponse"
               example:
-                - id: 1
+                - id: "1"
                   name: Levesek
-                - id: 2
+                - id: "2"
                   name: Főételek
-                - id: 3
-                  name: Desszertek
 
     post:
       summary: Új kategória hozzáadása
@@ -40,17 +37,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FoodCategory"
+              $ref: "#/components/schemas/FoodCategoryRequest"
       responses:
         "201":
           description: Kategória sikeresen létrehozva
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FoodCategory"
+                $ref: "#/components/schemas/IdModel"
               example:
-                id: 4
-                name: Italok
+                id: "4"
 
   /categories/{id}:
     get:
@@ -61,19 +57,24 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
+          description: A kategória egyedi azonosítója.
       responses:
         "200":
           description: Kategória sikeresen lekérdezve
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FoodCategory"
+                $ref: "#/components/schemas/FoodCategoryResponse"
               example:
-                id: 1
+                id: "1"
                 name: Levesek
         "404":
           description: Kategória nem található
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     delete:
       summary: Kategória törlése
@@ -83,12 +84,16 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         "204":
           description: Kategória törölve
         "404":
           description: Kategória nem található
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /foods:
     get:
@@ -102,20 +107,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Food"
+                  $ref: "#/components/schemas/FoodResponse"
               example:
-                - id: 1
+                - id: "1"
                   name: Gulyásleves
-                  categoryId: 1
+                  categoryId: "1"
                   price: 1200
-                - id: 2
-                  name: Csirkepaprikás
-                  categoryId: 2
-                  price: 2200
-                - id: 3
-                  name: Somlói galuska
-                  categoryId: 3
-                  price: 1500
 
     post:
       summary: Új étel hozzáadása
@@ -125,19 +122,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Food"
+              $ref: "#/components/schemas/FoodRequest"
       responses:
         "201":
           description: Étel sikeresen hozzáadva
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Food"
+                $ref: "#/components/schemas/IdModel"
               example:
-                id: 4
-                name: Csokoládé mousse
-                categoryId: 3
-                price: 1700
+                id: "4"
 
   /foods/{id}:
     get:
@@ -148,21 +142,20 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         "200":
           description: Étel sikeresen lekérdezve
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Food"
-              example:
-                id: 1
-                name: Gulyásleves
-                categoryId: 1
-                price: 1200
+                $ref: "#/components/schemas/FoodResponse"
         "404":
           description: Étel nem található
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     put:
       summary: Étel módosítása
@@ -172,27 +165,31 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Food"
+              $ref: "#/components/schemas/FoodRequest"
       responses:
         "200":
           description: Étel sikeresen módosítva
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Food"
+                $ref: "#/components/schemas/FoodResponse"
               example:
-                id: 1
+                id: "1"
                 name: Húsleves
-                categoryId: 1
+                categoryId: "1"
                 price: 1300
         "404":
           description: Étel nem található
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     delete:
       summary: Étel törlése
@@ -202,47 +199,66 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         "204":
           description: Étel törölve
         "404":
           description: Étel nem található
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
+    IdModel:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Egyedi azonosító.
 
-    FoodCategory:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Erőforrás nem található
+
+    FoodCategoryRequest:
       type: object
       required:
         - name
       properties:
-        id:
-          type: integer
-          description: Az ételkategória egyedi azonosítója.
-          readOnly: true
         name:
           type: string
           description: Az ételkategória neve.
           x-field-extra-annotation: '@hu.oe.yokudlela.food.validation.NameExists(message="error.food.name.exists")'
 
-    Food:
+    FoodCategoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/IdModel'
+        - $ref: '#/components/schemas/FoodCategoryRequest'
+
+    FoodRequest:
       type: object
       required:
         - name
         - categoryId
         - price
       properties:
-        id:
-          type: integer
-          description: Az étel egyedi azonosítója.
-          readOnly: true
         name:
           type: string
           description: Az étel neve.
         categoryId:
-          type: integer
+          type: string
           description: Az étel kategóriájának azonosítója.
         price:
           type: integer
           description: Az étel ára forintban.
+
+    FoodResponse:
+      allOf:
+        - $ref: '#/components/schemas/IdModel'
+        - $ref: '#/components/schemas/FoodRequest'
