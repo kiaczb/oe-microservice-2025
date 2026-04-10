@@ -23,12 +23,14 @@ public class FoodCategory  implements java.io.Serializable {
 
 
         
+                @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+            
                 @Id 
 
            
            @Column(name="id", unique=true, nullable=false)
 
-    private long id;
+    private Long id;
         
 
            

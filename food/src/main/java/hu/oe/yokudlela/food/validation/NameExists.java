@@ -1,19 +1,20 @@
 package hu.oe.yokudlela.food.validation;
 
+import hu.oe.yokudlela.rdbms.FoodCategoryRepository;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = NameExistsValidator.class)
-
 public @interface NameExists {
     String message();
     Class<?>[] groups() default {};
@@ -21,18 +22,22 @@ public @interface NameExists {
 }
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 class NameExistsValidator implements ConstraintValidator<NameExists, String> {
 
-    String message;
-
-    @Override
-    public void initialize(NameExists constraintAnnotation) {
-        message = constraintAnnotation.message();
-    }
+    @Autowired
+    private FoodCategoryRepository categoryRepository;
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return false;
+
+        if (value == null || value.isEmpty()) {
+            return true;
+        }
+
+        boolean exists = categoryRepository.existsByName(value);
+        log.info("Checking if name '{}' exists: {}", value, exists);
+
+        return !exists;
     }
 }

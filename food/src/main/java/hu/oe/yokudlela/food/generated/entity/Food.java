@@ -21,7 +21,7 @@ public class Food  implements java.io.Serializable {
 
 
         
-                @jakarta.persistence.GeneratedValue(generator = "uuid-hibernate-generator")
+                @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
             
                 @Id 
 

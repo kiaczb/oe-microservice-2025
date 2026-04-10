@@ -1,168 +1,167 @@
 package hu.oe.yokudlela.rest;
 
 import hu.oe.yokudlela.food.generated.rest.api.DefaultApi;
-import hu.oe.yokudlela.food.generated.rest.model.Food;
-import hu.oe.yokudlela.food.generated.rest.model.FoodCategory;
+import hu.oe.yokudlela.food.generated.rest.model.*;
+import hu.oe.yokudlela.food.generated.entity.Food;
+import hu.oe.yokudlela.food.generated.entity.FoodCategory;
+import hu.oe.yokudlela.rdbms.FoodCategoryRepository;
+import hu.oe.yokudlela.rdbms.FoodRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
-@RequestMapping("")
 public class FoodController implements DefaultApi {
 
-    private final List<Food> foods = new ArrayList<>();
-    private final List<FoodCategory> categories = new ArrayList<>();
+    private final FoodRepository foodRepository;
+    private final FoodCategoryRepository foodCategoryRepository;
+    private final ModelMapper modelMapper;
 
-    private int foodIdCounter = 1;
-    private int categoryIdCounter = 1;
-
-    // -------------------- INIT --------------------
-
-    public FoodController() {
-
-
-        FoodCategory soups = new FoodCategory();
-        soups.setId(categoryIdCounter++);
-        soups.setName("Levesek");
-
-        FoodCategory main = new FoodCategory();
-        main.setId(categoryIdCounter++);
-        main.setName("Főételek");
-
-        FoodCategory desserts = new FoodCategory();
-        desserts.setId(categoryIdCounter++);
-        desserts.setName("Desszertek");
-
-        FoodCategory drinks = new FoodCategory();
-        drinks.setId(categoryIdCounter++);
-        drinks.setName("Italok");
-
-        categories.add(soups);
-        categories.add(main);
-        categories.add(desserts);
-        categories.add(drinks);
-
-
-
-
-        foods.add(createFood("Gulyásleves", soups.getId(), 1200));
-        foods.add(createFood("Húsleves", soups.getId(), 1100));
-        foods.add(createFood("Halászlé", soups.getId(), 1800));
-
-
-        foods.add(createFood("Csirkepaprikás", main.getId(), 2200));
-        foods.add(createFood("Rántott csirke", main.getId(), 2000));
-        foods.add(createFood("Sertéspörkölt", main.getId(), 2400));
-        foods.add(createFood("Marhapörkölt", main.getId(), 2800));
-        foods.add(createFood("Töltött káposzta", main.getId(), 2300));
-
-
-        foods.add(createFood("Somlói galuska", desserts.getId(), 1500));
-        foods.add(createFood("Palacsinta", desserts.getId(), 900));
-        foods.add(createFood("Túrógombóc", desserts.getId(), 1400));
-        foods.add(createFood("Csokoládé mousse", desserts.getId(), 1700));
-
-
-        foods.add(createFood("Ásványvíz", drinks.getId(), 500));
-        foods.add(createFood("Kóla", drinks.getId(), 600));
-        foods.add(createFood("Narancslé", drinks.getId(), 700));
+    public FoodController(FoodRepository foodRepository, FoodCategoryRepository foodCategoryRepository, ModelMapper modelMapper) {
+        this.foodRepository = foodRepository;
+        this.foodCategoryRepository = foodCategoryRepository;
+        this.modelMapper = modelMapper;
     }
-    private Food createFood(String name, Integer categoryId, Integer price) {
-        Food food = new Food();
-        food.setId(foodIdCounter++);
-        food.setName(name);
-        food.setCategoryId(categoryId);
-        food.setPrice(price);
-        return food;
-    }
-    
+
+    // ==========================================
+    //            KATEGÓRIA VÉGPONTOK
+    // ==========================================
 
     @Override
-    public ResponseEntity<List<FoodCategory>> categoriesGet() {
-        return ResponseEntity.ok(categories);
+    public ResponseEntity<List<FoodCategoryResponse>> categoriesGet() {
+        List<FoodCategoryResponse> responses = StreamSupport.stream(foodCategoryRepository.findAll().spliterator(), false)
+                .map(entity -> {
+                    FoodCategoryResponse response = modelMapper.map(entity, FoodCategoryResponse.class);
+                    response.setId(String.valueOf(entity.getId())); // long -> String
+                    return response;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @Override
-    public ResponseEntity<FoodCategory> categoriesPost(FoodCategory category) {
-        category.setId(categoryIdCounter++);
-        categories.add(category);
-        return ResponseEntity.status(201).body(category);
+    public ResponseEntity<IdModel> categoriesPost(FoodCategoryRequest request) {
+        FoodCategory entityToSave = modelMapper.map(request, FoodCategory.class);
+        FoodCategory savedEntity = foodCategoryRepository.save(entityToSave);
+
+        IdModel idModel = new IdModel();
+        idModel.setId(String.valueOf(savedEntity.getId())); // long -> String
+        return ResponseEntity.status(201).body(idModel);
     }
 
     @Override
-    public ResponseEntity<FoodCategory> categoriesIdGet(Integer id) {
-        Optional<FoodCategory> category = categories.stream()
-                .filter(c -> c.getId().equals(id))
-                .findFirst();
+    public ResponseEntity<FoodCategoryResponse> categoriesIdGet(String id) {
+        Optional<FoodCategory> categoryOpt = foodCategoryRepository.findById(Long.parseLong(id));
 
-        return category.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (categoryOpt.isPresent()) {
+            FoodCategory entity = categoryOpt.get();
+            FoodCategoryResponse response = modelMapper.map(entity, FoodCategoryResponse.class);
+            response.setId(String.valueOf(entity.getId()));
+            return ResponseEntity.ok(response);
+        }
+
+        // Ha nem találta meg
+        return ResponseEntity.notFound().build();
     }
 
     @Override
-    public ResponseEntity<Void> categoriesIdDelete(Integer id) {
-        boolean removed = categories.removeIf(c -> c.getId().equals(id));
-
-        if (removed) {
+    public ResponseEntity<Void> categoriesIdDelete(String id) {
+        Long longId = Long.parseLong(id); // String -> Long
+        if (foodCategoryRepository.existsById(longId)) {
+            foodCategoryRepository.deleteById(longId);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
-
+    // ==========================================
+    //               ÉTEL VÉGPONTOK
+    // ==========================================
 
     @Override
-    public ResponseEntity<List<Food>> foodsGet() {
-        return ResponseEntity.ok(foods);
+    public ResponseEntity<List<FoodResponse>> foodsGet() {
+        List<FoodResponse> responses = StreamSupport.stream(foodRepository.findAll().spliterator(), false)
+                .map(this::convertToFoodResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @Override
-    public ResponseEntity<Food> foodsPost(Food food) {
-        food.setId(foodIdCounter++);
-        foods.add(food);
-        return ResponseEntity.status(201).body(food);
+    public ResponseEntity<IdModel> foodsPost(FoodRequest request) {
+        // String kategória ID -> Long konverzió
+        Optional<FoodCategory> categoryOpt = foodCategoryRepository.findById(Long.parseLong(request.getCategoryId()));
+        if (categoryOpt.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Food entityToSave = modelMapper.map(request, Food.class);
+        entityToSave.setFoodCategory(categoryOpt.get());
+
+        Food savedEntity = foodRepository.save(entityToSave);
+
+        IdModel idModel = new IdModel();
+        idModel.setId(savedEntity.getId().toString()); // Itt marad a toString(), mert a Food ID-ja UUID
+        return ResponseEntity.status(201).body(idModel);
     }
 
     @Override
-    public ResponseEntity<Food> foodsIdGet(Integer id) {
-        Optional<Food> food = foods.stream()
-                .filter(f -> f.getId().equals(id))
-                .findFirst();
-
-        return food.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<FoodResponse> foodsIdGet(String id) {
+        return foodRepository.findById(UUID.fromString(id))
+                .map(entity -> ResponseEntity.ok(convertToFoodResponse(entity)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Override
-    public ResponseEntity<Food> foodsIdPut(Integer id, Food food) {
-        Optional<Food> existing = foods.stream()
-                .filter(f -> f.getId().equals(id))
-                .findFirst();
+    public ResponseEntity<FoodResponse> foodsIdPut(String id, FoodRequest request) {
+        UUID foodUuid = UUID.fromString(id);
+        Optional<Food> existingFoodOpt = foodRepository.findById(foodUuid);
 
-        if (existing.isPresent()) {
-            Food updated = existing.get();
-            updated.setName(food.getName());
-            updated.setCategoryId(food.getCategoryId());
-            updated.setPrice(food.getPrice());
+        if (existingFoodOpt.isPresent()) {
+            Food existingFood = existingFoodOpt.get();
 
-            return ResponseEntity.ok(updated);
+            // Kategória ID konverzió (String -> Long)
+            Optional<FoodCategory> categoryOpt = foodCategoryRepository.findById(Long.parseLong(request.getCategoryId()));
+            if (categoryOpt.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            existingFood.setName(request.getName());
+            existingFood.setPrice(request.getPrice());
+            existingFood.setFoodCategory(categoryOpt.get());
+
+            Food updatedEntity = foodRepository.save(existingFood);
+            return ResponseEntity.ok(convertToFoodResponse(updatedEntity));
         }
 
         return ResponseEntity.notFound().build();
     }
 
     @Override
-    public ResponseEntity<Void> foodsIdDelete(Integer id) {
-        boolean removed = foods.removeIf(f -> f.getId().equals(id));
-
-        if (removed) {
+    public ResponseEntity<Void> foodsIdDelete(String id) {
+        UUID uuid = UUID.fromString(id);
+        if (foodRepository.existsById(uuid)) {
+            foodRepository.deleteById(uuid);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // ==========================================
+    //              SEGÉDMETÓDUSOK
+    // ==========================================
+
+    private FoodResponse convertToFoodResponse(Food entity) {
+        FoodResponse response = modelMapper.map(entity, FoodResponse.class);
+        if (entity.getFoodCategory() != null) {
+            // Mivel a getFoodCategory().getId() egy primitív long, sosem null, így egyből mehet a String.valueOf()
+            response.setCategoryId(String.valueOf(entity.getFoodCategory().getId()));
+        }
+        return response;
     }
 }
