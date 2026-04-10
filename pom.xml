@@ -20,6 +20,12 @@
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
         <openapi-generator-maven-plugin.version>7.10.0</openapi-generator-maven-plugin.version>
         <lombok.version>1.18.36</lombok.version>
+
+        <postgresql.version>42.6.0</postgresql.version>
+        <liquibase-maven-plugin.version>4.25.0</liquibase-maven-plugin.version>
+        <hibernate-tools-orm.version>6.6.8.Final</hibernate-tools-orm.version>
+        <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+        <hibernate-validator.version>7.0.5.Final</hibernate-validator.version>
     </properties>
 
     <dependencyManagement>
