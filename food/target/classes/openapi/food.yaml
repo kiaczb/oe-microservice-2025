@@ -279,6 +279,7 @@ components:
       properties:
         name:
           type: string
+          x-field-extra-annotation: '@hu.oe.yokudlela.food.validation.NameExists(message="error.food.name.exists")'
         categoryId:
           type: string
         price:

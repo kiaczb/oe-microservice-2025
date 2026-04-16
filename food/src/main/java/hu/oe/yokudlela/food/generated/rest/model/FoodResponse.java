@@ -31,6 +31,7 @@ public class FoodResponse implements Serializable {
 
   private String id;
 
+  @hu.oe.yokudlela.food.validation.NameExists(message="error.food.name.exists")
   private String name;
 
   private String categoryId;

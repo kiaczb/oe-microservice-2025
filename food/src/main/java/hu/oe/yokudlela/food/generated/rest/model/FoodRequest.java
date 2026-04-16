@@ -29,6 +29,7 @@ public class FoodRequest implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  @hu.oe.yokudlela.food.validation.NameExists(message="error.food.name.exists")
   private String name;
 
   private String categoryId;

@@ -1,6 +1,7 @@
 package hu.oe.yokudlela.food.validation;
 
 import hu.oe.yokudlela.rdbms.FoodCategoryRepository;
+import hu.oe.yokudlela.rdbms.FoodRepository;
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -28,16 +29,20 @@ class NameExistsValidator implements ConstraintValidator<NameExists, String> {
     @Autowired
     private FoodCategoryRepository categoryRepository;
 
+    @Autowired
+    private FoodRepository foodRepository;
+
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null || value.isEmpty()) return true;
 
-        if (value == null || value.isEmpty()) {
-            return true;
-        }
+        // Megnézzük kategóriák között ÉS ételek között is
+        boolean existsInCategory = categoryRepository.existsByName(value);
+        boolean existsInFood = foodRepository.existsByName(value);
 
-        boolean exists = categoryRepository.existsByName(value);
-        log.info("Checking if name '{}' exists: {}", value, exists);
+        log.info("Checking name '{}' - Category exists: {}, Food exists: {}", value, existsInCategory, existsInFood);
 
-        return !exists;
+        // Ha bármelyikben létezik, akkor érvénytelen (false)
+        return !existsInCategory && !existsInFood;
     }
 }
