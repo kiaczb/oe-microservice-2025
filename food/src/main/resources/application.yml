@@ -8,6 +8,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/food
     username: oeuser
     password: password
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9080/realms/oe
 
 
 springdoc:

@@ -17,8 +17,9 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * IdModel
- */
+* IdModel
+*/
+
 @lombok.Data
 @lombok.NoArgsConstructor
 @lombok.AllArgsConstructor
@@ -27,9 +28,12 @@ import jakarta.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.10.0")
 public class IdModel implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private String id;
 
-}
+
+            private String id;
+    public static final String FIELD_ID="id";
+
+    }
 

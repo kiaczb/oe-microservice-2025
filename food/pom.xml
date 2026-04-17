@@ -165,9 +165,9 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!--
-                                                        <templateDirectory>${project.basedir}/../_templates</templateDirectory>
-                            -->
+
+                            <templateDirectory>${project.basedir}/../_templates/openapi/spring</templateDirectory>
+
                             <skipValidateSpec>true</skipValidateSpec>
                             <inputSpecRootDirectory>${project.basedir}/src/main/resources/openapi
                             </inputSpecRootDirectory>

@@ -17,8 +17,9 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * FoodCategoryRequest
- */
+* FoodCategoryRequest
+*/
+
 @lombok.Data
 @lombok.NoArgsConstructor
 @lombok.AllArgsConstructor
@@ -27,10 +28,13 @@ import jakarta.annotation.Generated;
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.10.0")
 public class FoodCategoryRequest implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  @hu.oe.yokudlela.food.validation.NameExists(message="error.food.name.exists")
-  private String name;
+        @hu.oe.yokudlela.food.validation.NameExists(message="error.food.name.exists")
 
-}
+
+            private String name;
+    public static final String FIELD_NAME="name";
+
+    }
 

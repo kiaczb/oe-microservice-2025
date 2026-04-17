@@ -11,6 +11,9 @@ import hu.oe.yokudlela.food.generated.rest.model.FoodCategoryResponse;
 import hu.oe.yokudlela.food.generated.rest.model.FoodRequest;
 import hu.oe.yokudlela.food.generated.rest.model.FoodResponse;
 import hu.oe.yokudlela.food.generated.rest.model.IdModel;
+
+import jakarta.annotation.security.RolesAllowed;
+import org.springframework.security.access.prepost.PreAuthorize;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,11 +46,16 @@ import jakarta.annotation.Generated;
 public interface DefaultApi {
 
     /**
+
      * GET /categories : Kategóriák listázása
      * Lekérdezi az összes ételkategóriát.
      *
      * @return Kategóriák sikeresen lekérdezve (status code 200)
      */
+
+
+
+
     @Operation(
         operationId = "categoriesGet",
         summary = "Kategóriák listázása",
@@ -57,19 +65,28 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FoodCategoryResponse.class)))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/categories",
         produces = { "application/json" }
     )
+    @RolesAllowed("view")
+
+
+
     
     ResponseEntity<List<FoodCategoryResponse>> categoriesGet(
-        
     );
 
-
     /**
+
      * DELETE /categories/{id} : Kategória törlése
      * Törli a kategóriát ID alapján.
      *
@@ -77,6 +94,10 @@ public interface DefaultApi {
      * @return Kategória törölve (status code 204)
      *         or Kategória nem található (status code 404)
      */
+
+
+
+
     @Operation(
         operationId = "categoriesIdDelete",
         summary = "Kategória törlése",
@@ -87,19 +108,31 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
         value = "/categories/{id}",
         produces = { "application/json" }
     )
+    @RolesAllowed("edit")
+
+
+
     
     ResponseEntity<Void> categoriesIdDelete(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
+        
+
+@Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id 
     );
 
-
     /**
+
      * GET /categories/{id} : Kategória lekérdezése
      * Lekérdezi egy adott kategóriát ID alapján.
      *
@@ -107,6 +140,10 @@ public interface DefaultApi {
      * @return Kategória sikeresen lekérdezve (status code 200)
      *         or Kategória nem található (status code 404)
      */
+
+
+
+
     @Operation(
         operationId = "categoriesIdGet",
         summary = "Kategória lekérdezése",
@@ -119,25 +156,41 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/categories/{id}",
         produces = { "application/json" }
     )
+    @RolesAllowed("view")
+
+
+
     
     ResponseEntity<FoodCategoryResponse> categoriesIdGet(
-        @Parameter(name = "id", description = "A kategória egyedi azonosítója.", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
+        
+
+@Parameter(name = "id", description = "A kategória egyedi azonosítója.", required = true, in = ParameterIn.PATH) @PathVariable("id") String id 
     );
 
-
     /**
+
      * POST /categories : Új kategória hozzáadása
      * Új ételkategóriát hoz létre.
      *
      * @param foodCategoryRequest  (required)
      * @return Kategória sikeresen létrehozva (status code 201)
      */
+
+
+
+
     @Operation(
         operationId = "categoriesPost",
         summary = "Új kategória hozzáadása",
@@ -147,6 +200,12 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = IdModel.class))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.POST,
@@ -154,18 +213,28 @@ public interface DefaultApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
+    @RolesAllowed("edit")
+
+
+
     
     ResponseEntity<IdModel> categoriesPost(
-        @Parameter(name = "FoodCategoryRequest", description = "", required = true) @Valid @RequestBody FoodCategoryRequest foodCategoryRequest
+        
+
+ @Parameter(name = "FoodCategoryRequest", description = "", required = true) @Valid @RequestBody FoodCategoryRequest foodCategoryRequest
     );
 
-
     /**
+
      * GET /foods : Ételek listázása
      * Lekérdezi az összes ételt.
      *
      * @return Ételek sikeresen lekérdezve (status code 200)
      */
+
+
+
+
     @Operation(
         operationId = "foodsGet",
         summary = "Ételek listázása",
@@ -175,19 +244,28 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FoodResponse.class)))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/foods",
         produces = { "application/json" }
     )
+    @RolesAllowed("view")
+
+
+
     
     ResponseEntity<List<FoodResponse>> foodsGet(
-        
     );
 
-
     /**
+
      * DELETE /foods/{id} : Étel törlése
      * Törli az ételt az ID alapján.
      *
@@ -195,6 +273,10 @@ public interface DefaultApi {
      * @return Étel törölve (status code 204)
      *         or Étel nem található (status code 404)
      */
+
+
+
+
     @Operation(
         operationId = "foodsIdDelete",
         summary = "Étel törlése",
@@ -205,19 +287,31 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
         value = "/foods/{id}",
         produces = { "application/json" }
     )
+    @RolesAllowed("edit")
+
+
+
     
     ResponseEntity<Void> foodsIdDelete(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
+        
+
+@Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id 
     );
 
-
     /**
+
      * GET /foods/{id} : Étel lekérdezése
      * Lekérdez egy ételt az ID alapján.
      *
@@ -225,6 +319,10 @@ public interface DefaultApi {
      * @return Étel sikeresen lekérdezve (status code 200)
      *         or Étel nem található (status code 404)
      */
+
+
+
+
     @Operation(
         operationId = "foodsIdGet",
         summary = "Étel lekérdezése",
@@ -237,19 +335,31 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/foods/{id}",
         produces = { "application/json" }
     )
+    @RolesAllowed("view")
+
+
+
     
     ResponseEntity<FoodResponse> foodsIdGet(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
+        
+
+@Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id 
     );
 
-
     /**
+
      * PUT /foods/{id} : Étel módosítása
      * Módosítja az étel adatait.
      *
@@ -258,6 +368,10 @@ public interface DefaultApi {
      * @return Étel sikeresen módosítva (status code 200)
      *         or Étel nem található (status code 404)
      */
+
+
+
+
     @Operation(
         operationId = "foodsIdPut",
         summary = "Étel módosítása",
@@ -270,6 +384,12 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.PUT,
@@ -277,20 +397,32 @@ public interface DefaultApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
+    @RolesAllowed("edit")
+
+
+
     
     ResponseEntity<FoodResponse> foodsIdPut(
-        @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id,
-        @Parameter(name = "FoodRequest", description = "", required = true) @Valid @RequestBody FoodRequest foodRequest
+        
+
+@Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id 
+        ,
+
+ @Parameter(name = "FoodRequest", description = "", required = true) @Valid @RequestBody FoodRequest foodRequest
     );
 
-
     /**
+
      * POST /foods : Új étel hozzáadása
      * Új ételt ad hozzá a rendszerhez.
      *
      * @param foodRequest  (required)
      * @return Étel sikeresen hozzáadva (status code 201)
      */
+
+
+
+
     @Operation(
         operationId = "foodsPost",
         summary = "Új étel hozzáadása",
@@ -300,6 +432,12 @@ public interface DefaultApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = IdModel.class))
             })
         }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
     )
     @RequestMapping(
         method = RequestMethod.POST,
@@ -307,9 +445,15 @@ public interface DefaultApi {
         produces = { "application/json" },
         consumes = { "application/json" }
     )
+    @RolesAllowed("edit")
+
+
+
     
     ResponseEntity<IdModel> foodsPost(
-        @Parameter(name = "FoodRequest", description = "", required = true) @Valid @RequestBody FoodRequest foodRequest
+        
+
+ @Parameter(name = "FoodRequest", description = "", required = true) @Valid @RequestBody FoodRequest foodRequest
     );
 
 }

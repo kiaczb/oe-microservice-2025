@@ -14,6 +14,9 @@ paths:
     get:
       summary: Kategóriák listázása
       description: Lekérdezi az összes ételkategóriát.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("view")'
       responses:
         "200":
           description: Kategóriák sikeresen lekérdezve
@@ -32,6 +35,9 @@ paths:
     post:
       summary: Új kategória hozzáadása
       description: Új ételkategóriát hoz létre.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("edit")'
       requestBody:
         required: true
         content:
@@ -52,6 +58,9 @@ paths:
     get:
       summary: Kategória lekérdezése
       description: Lekérdezi egy adott kategóriát ID alapján.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("view")'
       parameters:
         - in: path
           name: id
@@ -79,6 +88,9 @@ paths:
     delete:
       summary: Kategória törlése
       description: Törli a kategóriát ID alapján.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("edit")'
       parameters:
         - in: path
           name: id
@@ -99,6 +111,9 @@ paths:
     get:
       summary: Ételek listázása
       description: Lekérdezi az összes ételt.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("view")'
       responses:
         "200":
           description: Ételek sikeresen lekérdezve
@@ -117,6 +132,9 @@ paths:
     post:
       summary: Új étel hozzáadása
       description: Új ételt ad hozzá a rendszerhez.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("edit")'
       requestBody:
         required: true
         content:
@@ -137,6 +155,9 @@ paths:
     get:
       summary: Étel lekérdezése
       description: Lekérdez egy ételt az ID alapján.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("view")'
       parameters:
         - in: path
           name: id
@@ -160,6 +181,9 @@ paths:
     put:
       summary: Étel módosítása
       description: Módosítja az étel adatait.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("edit")'
       parameters:
         - in: path
           name: id
@@ -194,6 +218,9 @@ paths:
     delete:
       summary: Étel törlése
       description: Törli az ételt az ID alapján.
+      security:
+        - BearerAuth: [ ]
+      x-operation-extra-annotation: '@RolesAllowed("edit")'
       parameters:
         - in: path
           name: id
@@ -211,6 +238,12 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     IdModel:
       type: object
@@ -218,7 +251,6 @@ components:
         id:
           type: string
           description: Egyedi azonosító.
-          # Ide nem teszünk generálást, mert ez csak egy általános DTO
 
     ErrorResponse:
       type: object
@@ -227,14 +259,12 @@ components:
           type: string
           example: Erőforrás nem található
 
-    # Ez lesz az ENTITY alapja a generátornak
     FoodCategory:
       type: object
       properties:
         id:
           type: integer
           format: int64
-          # Ez mondja meg az adatbázisnak, hogy ő generálja az ID-t (1, 2, 3...)
           x-field-extra-annotation: "@jakarta.persistence.Id @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)"
         name:
           type: string
@@ -254,14 +284,12 @@ components:
         - $ref: '#/components/schemas/IdModel'
         - $ref: '#/components/schemas/FoodCategoryRequest'
 
-    # Az Étel Entity leírása
     Food:
       type: object
       properties:
         id:
           type: string
           format: uuid
-          # Ez mondja meg az adatbázisnak, hogy generáljon UUID-t
           x-field-extra-annotation: "@jakarta.persistence.Id @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)"
         name:
           type: string
@@ -289,3 +317,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/IdModel'
         - $ref: '#/components/schemas/FoodRequest'
+
+security:
+  - BearerAuth: [ ]
