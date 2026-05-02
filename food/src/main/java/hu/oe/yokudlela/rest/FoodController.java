@@ -71,6 +71,26 @@ public class FoodController implements DefaultApi {
     }
 
     @Override
+    public ResponseEntity<FoodCategoryResponse> categoriesIdPut(String id, FoodCategoryRequest foodCategoryRequest) {
+        Optional<FoodCategory> categoryOpt = foodCategoryRepository.findById(Long.parseLong(id));
+
+        if (categoryOpt.isPresent()) {
+            FoodCategory existingCategory = categoryOpt.get();
+            // Adatok frissítése
+            existingCategory.setName(foodCategoryRequest.getName());
+
+            FoodCategory updatedEntity = foodCategoryRepository.save(existingCategory);
+
+            // Válasz összeállítása
+            FoodCategoryResponse response = modelMapper.map(updatedEntity, FoodCategoryResponse.class);
+            response.setId(String.valueOf(updatedEntity.getId()));
+            return ResponseEntity.ok(response);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @Override
     public ResponseEntity<Void> categoriesIdDelete(String id) {
         Long longId = Long.parseLong(id); // String -> Long
         if (foodCategoryRepository.existsById(longId)) {

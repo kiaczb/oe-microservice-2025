@@ -181,6 +181,59 @@ public interface DefaultApi {
 
     /**
 
+     * PUT /categories/{id} : Kategória módosítása
+     * Módosítja az ételkategória adatait.
+     *
+     * @param id A kategória egyedi azonosítója. (required)
+     * @param foodCategoryRequest  (required)
+     * @return Kategória sikeresen módosítva (status code 200)
+     *         or Kategória nem található (status code 404)
+     */
+
+
+
+
+    @Operation(
+        operationId = "categoriesIdPut",
+        summary = "Kategória módosítása",
+        description = "Módosítja az ételkategória adatait.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Kategória sikeresen módosítva", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = FoodCategoryResponse.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "Kategória nem található", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+            })
+        }
+        ,
+        security = {
+            @SecurityRequirement(name = "OpenAPI", scopes={ })
+        }
+
+        
+    )
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = "/categories/{id}",
+        produces = { "application/json" },
+        consumes = { "application/json" }
+    )
+    @RolesAllowed("edit")
+
+
+
+    
+    ResponseEntity<FoodCategoryResponse> categoriesIdPut(
+        
+
+@Parameter(name = "id", description = "A kategória egyedi azonosítója.", required = true, in = ParameterIn.PATH) @PathVariable("id") String id 
+        ,
+
+ @Parameter(name = "FoodCategoryRequest", description = "", required = true) @Valid @RequestBody FoodCategoryRequest foodCategoryRequest
+    );
+
+    /**
+
      * POST /categories : Új kategória hozzáadása
      * Új ételkategóriát hoz létre.
      *
